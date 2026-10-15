@@ -24,12 +24,7 @@ export const KedatanganPage: React.FC<KedatanganPageProps> = ({
   onBack,
   onSubmit,
   onOpenMaster,
-  onOpenHistory,
-  onOpenSettings,
-  onOpenGuide,
   onOpenUpdateMenu,
-  recordsCount = 0,
-  sheetsConnected = false,
 }) => {
   const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -226,10 +221,10 @@ export const KedatanganPage: React.FC<KedatanganPageProps> = ({
   return (
     // Centered layout for mobile and desktop
     <div className="w-full flex flex-col items-center justify-start p-3 sm:p-6 animate-in fade-in">
-      {/* Top Quick Navigation Bar above Form */}
-      <div className="w-full max-w-2xl mb-2 flex items-center justify-between gap-2 text-[11px]">
-        <div className="flex items-center gap-1.5">
-          {onBack && (
+      {/* Top Quick Navigation Bar above Form (hanya jika ada tombol kembali) */}
+      {onBack && (
+        <div className="w-full max-w-2xl mb-2 flex items-center justify-between gap-2 text-[11px]">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={onBack}
@@ -239,46 +234,9 @@ export const KedatanganPage: React.FC<KedatanganPageProps> = ({
               <ArrowLeft className="w-3 h-3" />
               <span>Kembali</span>
             </button>
-          )}
-          {onOpenHistory && (
-            <button
-              type="button"
-              onClick={onOpenHistory}
-              className="inline-flex items-center gap-1 px-2 py-1 font-semibold text-stone-700 bg-white border border-stone-400 rounded-md hover:bg-stone-100 transition-colors shadow-2xs cursor-pointer text-[11px]"
-              title="Lihat Riwayat Transaksi Tersimpan"
-            >
-              <span>Riwayat</span>
-              <span className="px-1.5 py-0.2 bg-stone-200 text-stone-800 rounded-full font-mono text-[9px]">
-                {recordsCount}
-              </span>
-            </button>
-          )}
-          {onOpenSettings && (
-            <button
-              type="button"
-              onClick={onOpenSettings}
-              className="inline-flex items-center gap-1 px-2 py-1 font-semibold text-stone-700 bg-white border border-stone-400 rounded-md hover:bg-stone-100 transition-colors shadow-2xs cursor-pointer text-[11px]"
-              title="Pengaturan Google Spreadsheet"
-            >
-              <span>Spreadsheet</span>
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  sheetsConnected ? 'bg-emerald-500' : 'bg-stone-400'
-                }`}
-              />
-            </button>
-          )}
-          {onOpenGuide && (
-            <button
-              type="button"
-              onClick={onOpenGuide}
-              className="hidden sm:inline-flex items-center gap-1 px-2 py-1 font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-300 rounded-md transition-colors cursor-pointer text-[11px]"
-            >
-              <span>Panduan</span>
-            </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Form Frame with rounded-2xl & Warna Background Lebih Cerah */}
       <form

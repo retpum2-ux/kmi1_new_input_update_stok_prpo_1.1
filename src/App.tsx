@@ -163,12 +163,7 @@ export default function App() {
         <KedatanganPage
           onSubmit={handleSubmitForm}
           onOpenMaster={() => handleOpenUpdateMenu('menu4-pengaturan', 'barang')}
-          onOpenHistory={() => setIsHistoryOpen(true)}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          onOpenGuide={() => setIsGuideOpen(true)}
           onOpenUpdateMenu={handleOpenUpdateMenu}
-          recordsCount={records.length}
-          sheetsConnected={Boolean(settings.webhookUrl)}
         />
       </main>
 
