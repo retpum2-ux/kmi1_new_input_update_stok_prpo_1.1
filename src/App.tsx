@@ -164,6 +164,7 @@ export default function App() {
           onSubmit={handleSubmitForm}
           onOpenMaster={() => handleOpenUpdateMenu('menu4-pengaturan', 'barang')}
           onOpenUpdateMenu={handleOpenUpdateMenu}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
       </main>
 

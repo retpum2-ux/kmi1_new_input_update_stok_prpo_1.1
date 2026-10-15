@@ -15,11 +15,13 @@ import { UpdateMenuTab, PengaturanSubTab } from '../types';
 
 interface UpdateMenuDropdownProps {
   onSelectMenu: (tab: UpdateMenuTab, subTab?: PengaturanSubTab) => void;
+  onOpenSettings?: () => void;
   className?: string;
 }
 
 export const UpdateMenuDropdown: React.FC<UpdateMenuDropdownProps> = ({
   onSelectMenu,
+  onOpenSettings,
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -209,6 +211,32 @@ export const UpdateMenuDropdown: React.FC<UpdateMenuDropdownProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Integrasi Google Spreadsheet (Script & Webhook) */}
+            {onOpenSettings && (
+              <div className="pt-1 border-t border-stone-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    onOpenSettings();
+                  }}
+                  className="w-full text-left p-1.5 rounded-md hover:bg-emerald-50 active:bg-emerald-100 transition-colors flex items-center justify-between cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-5 rounded bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                      <FileSpreadsheet className="w-3 h-3" />
+                    </div>
+                    <span className="font-bold text-[11px] text-stone-900 group-hover:text-emerald-950">
+                      Integrasi Google Spreadsheet
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-1 py-0.2 rounded">
+                    Script / Webhook
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

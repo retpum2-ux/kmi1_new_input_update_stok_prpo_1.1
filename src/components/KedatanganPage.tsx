@@ -12,18 +12,15 @@ interface KedatanganPageProps {
   onBack?: () => void;
   onSubmit: (formData: KedatanganFormData) => Promise<{ success: boolean; synced: boolean; message: string }>;
   onOpenMaster?: () => void;
-  onOpenHistory?: () => void;
   onOpenSettings?: () => void;
-  onOpenGuide?: () => void;
   onOpenUpdateMenu?: (tab: UpdateMenuTab, subTab?: PengaturanSubTab) => void;
-  recordsCount?: number;
-  sheetsConnected?: boolean;
 }
 
 export const KedatanganPage: React.FC<KedatanganPageProps> = ({
   onBack,
   onSubmit,
   onOpenMaster,
+  onOpenSettings,
   onOpenUpdateMenu,
 }) => {
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -249,7 +246,10 @@ export const KedatanganPage: React.FC<KedatanganPageProps> = ({
           <span className="text-stone-700 font-bold whitespace-nowrap">PT KMI Wire and Cable Tbk</span>
           <div className="flex items-center gap-1.5 shrink-0">
             {onOpenUpdateMenu && (
-              <UpdateMenuDropdown onSelectMenu={onOpenUpdateMenu} />
+              <UpdateMenuDropdown
+                onSelectMenu={onOpenUpdateMenu}
+                onOpenSettings={onOpenSettings}
+              />
             )}
             <span className="text-stone-800 font-extrabold px-1.5 py-0.5 bg-[#e2f0e3] border border-stone-800 rounded text-[10px] tracking-wider">
               KMI1
