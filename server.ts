@@ -441,7 +441,7 @@ app.post('/api/submit', async (req: Request, res: Response) => {
     };
 
     let syncResult: any = null;
-    const webhookUrl = (appSettings.webhookUrl || '').trim();
+    const webhookUrl = (process.env.GOOGLE_SHEETS_WEBHOOK_URL || appSettings.webhookUrl || '').trim();
 
     if (webhookUrl) {
       try {

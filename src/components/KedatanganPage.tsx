@@ -12,7 +12,6 @@ interface KedatanganPageProps {
   onBack?: () => void;
   onSubmit: (formData: KedatanganFormData) => Promise<{ success: boolean; synced: boolean; message: string }>;
   onOpenMaster?: () => void;
-  onOpenSettings?: () => void;
   onOpenUpdateMenu?: (tab: UpdateMenuTab, subTab?: PengaturanSubTab) => void;
 }
 
@@ -20,7 +19,6 @@ export const KedatanganPage: React.FC<KedatanganPageProps> = ({
   onBack,
   onSubmit,
   onOpenMaster,
-  onOpenSettings,
   onOpenUpdateMenu,
 }) => {
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -248,7 +246,6 @@ export const KedatanganPage: React.FC<KedatanganPageProps> = ({
             {onOpenUpdateMenu && (
               <UpdateMenuDropdown
                 onSelectMenu={onOpenUpdateMenu}
-                onOpenSettings={onOpenSettings}
               />
             )}
             <span className="text-stone-800 font-extrabold px-1.5 py-0.5 bg-[#e2f0e3] border border-stone-800 rounded text-[10px] tracking-wider">

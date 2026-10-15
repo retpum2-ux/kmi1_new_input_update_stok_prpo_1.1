@@ -4,30 +4,14 @@
  * Form Kedatangan Barang & Integrasi Otomatis Google Spreadsheet
  * =========================================================================
  * 
- * PANDUAN LENGKAP PEMASANGAN DI GOOGLE DRIVE:
- * 1. Buka Google Spreadsheet di Google Drive Anda.
- * 2. Klik menu "Ekstensi" (Extensions) > pilih "Apps Script".
- * 3. Hapus seluruh baris kode yang ada di editor bawaan (Code.gs).
- * 4. Salin (Copy) dan Tempel (Paste) SELURUH KODE di bawah ini.
- * 5. Klik ikon "Simpan" (Ctrl+S / Cmd+S).
- * 6. (Opsional) Pilih fungsi "testKoneksi" di menu dropdown atas, lalu klik "Jalankan" (Run) untuk mengetes.
- * 7. Klik tombol biru "Terapkan" (Deploy) di pojok kanan atas > pilih "Deployment Baru" (New deployment).
- * 8. Klik ikon gerigi (Select type) di sebelah kiri > pilih "Aplikasi Web" (Web app).
- * 9. Isi konfigurasi:
- *    - Deskripsi          : KMI Webhook Form Kedatangan Barang
- *    - Jalankan sebagai   : Saya (Execute as me - email Anda)
- *    - Siapa yang memiliki akses : SIAPA SAJA (Anyone)  <--- WAJIB DIPILIH!
- * 10. Klik tombol "Terapkan" (Deploy) lalu klik "Berikan Izin" (Authorize access / Review permissions).
- *     (Jika muncul pesan "Google hasn't verified this app", klik "Advanced" > "Go to ... (unsafe)").
- * 11. Salin "URL Aplikasi Web" (Web App URL yang berakhiran "/exec").
- * 12. Tempel URL tersebut ke menu Pengaturan Spreadsheet di aplikasi web KMI!
- */
-
-export const GOOGLE_APPS_SCRIPT_CODE = `/**
- * =========================================================================
- * GOOGLE APPS SCRIPT - PT KMI WIRE AND CABLE TBK
- * Form Kedatangan Barang & Integrasi Database Google Spreadsheet
- * =========================================================================
+ * Kolom yang dikirim & dicatat di Spreadsheet:
+ * 1. Tanggal
+ * 2. Nama Barang
+ * 3. Kuantitas (Qty)
+ * 4. Satuan (U/M)
+ * 5. Keterangan
+ * 6. No P.R.
+ * 7. No P.O.
  * 
  * PANDUAN PENGGUNAAN:
  * 1. Buka Google Spreadsheet di Google Drive Anda.
@@ -40,12 +24,16 @@ export const GOOGLE_APPS_SCRIPT_CODE = `/**
  * 8. Jalankan sebagai: "Saya" (email Anda).
  * 9. Siapa yang memiliki akses: "SIAPA SAJA" (Anyone)  <-- WAJIB
  * 10. Berikan izin otorisasi Google (klik Advanced > Go to ... unsafe).
- * 11. Salin URL Web App (/exec) dan tempel di pengaturan aplikasi web KMI.
+ * 11. Salin URL Web App (/exec) untuk backend environment (GOOGLE_SHEETS_WEBHOOK_URL).
  */
 
-// =========================================================================
-// KONFIGURASI SPREADSHEET
-// =========================================================================
+export const GOOGLE_APPS_SCRIPT_CODE = `/**
+ * =========================================================================
+ * GOOGLE APPS SCRIPT - PT KMI WIRE AND CABLE TBK
+ * Form Kedatangan Barang & Integrasi Database Google Spreadsheet
+ * =========================================================================
+ * Kolom: Tanggal | Nama Barang | Qty | U/M | Keterangan | No P.R. | No P.O.
+ */
 
 // Opsional: Jika Anda membuat Apps Script dari script.google.com (mandiri/standalone),
 // masukkan ID Spreadsheet Anda di antara tanda kutip di bawah ini.
@@ -53,7 +41,7 @@ export const GOOGLE_APPS_SCRIPT_CODE = `/**
 // biarkan kosong '' karena script otomatis mendeteksinya).
 var SPREADSHEET_ID = '';
 
-// Header Kolom Tabel Kedatangan Barang
+// Header Kolom Tabel Kedatangan Barang (Hanya 7 Kolom)
 var HEADER_COLUMNS = [
   'Tanggal',
   'Nama Barang',
@@ -61,9 +49,7 @@ var HEADER_COLUMNS = [
   'Satuan (U/M)',
   'Keterangan',
   'No P.R.',
-  'No P.O.',
-  'Waktu Input',
-  'ID Transaksi'
+  'No P.O.'
 ];
 
 /**
@@ -100,10 +86,8 @@ function getSpreadsheet(optionalId) {
 
 /**
  * Inisialisasi sheet dan header jika sheet belum ada atau masih kosong.
- * Dapat dipanggil langsung dari editor tanpa error!
  */
 function setupSheet(ss, sheetName) {
-  // Jika dipanggil tanpa argumen ss, atau parameter pertama adalah nama sheet
   if (typeof ss === 'string') {
     sheetName = ss;
     ss = null;
@@ -128,7 +112,7 @@ function setupSheet(ss, sheetName) {
     sheet = ss.insertSheet(targetName);
   }
 
-  // Jika sheet kosong (baris <= 0), buat baris header berformat rapi
+  // Jika sheet kosong, buat header 7 kolom berformat rapi
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADER_COLUMNS);
     var headerRange = sheet.getRange(1, 1, 1, HEADER_COLUMNS.length);
@@ -151,7 +135,6 @@ function setupSheet(ss, sheetName) {
 
 /**
  * FUNGSI UJI / TEST LANGSUNG DARI EDITOR APPS SCRIPT
- * Pilih fungsi ini di dropdown atas editor Apps Script lalu klik "Jalankan" (Run).
  */
 function testKoneksi() {
   Logger.log('--- MEMULAI UJI KONEKSI ---');
@@ -169,7 +152,7 @@ function testKoneksi() {
     Logger.log('Nama Spreadsheet : ' + ss.getName());
     Logger.log('Nama Sheet       : ' + sheet.getName());
     Logger.log('URL Spreadsheet  : ' + ss.getUrl());
-    Logger.log('Jumlah Baris     : ' + sheet.getLastRow());
+    Logger.log('Jumlah Kolom     : ' + HEADER_COLUMNS.length + ' kolom');
     Logger.log('--- UJI KONEKSI SELESAI DENGAN BAIK ---');
   } catch (err) {
     Logger.log('❌ Error: ' + err.message);
@@ -177,11 +160,11 @@ function testKoneksi() {
 }
 
 /**
- * Handle HTTP POST Request (Pengiriman Form Kedatangan & Test Webhook)
+ * Handle HTTP POST Request (Pengiriman Form Kedatangan dari Backend)
  */
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  var hasLock = lock.tryLock(30000); // Kunci 30 detik agar aman dari race condition
+  var hasLock = lock.tryLock(30000);
 
   try {
     if (!e || !e.postData || !e.postData.contents) {
@@ -205,7 +188,6 @@ function doPost(e) {
       }
     }
 
-    // Ambil spreadsheet dengan aman
     var ss = getSpreadsheet(data.spreadsheetId || data.spreadsheet_id);
     if (!ss) {
       return createJsonResponse({
@@ -214,7 +196,7 @@ function doPost(e) {
       }, 500);
     }
 
-    // 1. PING / TEST KONEKSI DARI APLIKASI WEB
+    // 1. PING / TEST KONEKSI
     if (data.action === 'ping' || data.type === 'test') {
       setupSheet(ss, data.sheetName || 'Kedatangan');
       return createJsonResponse({
@@ -227,7 +209,7 @@ function doPost(e) {
       });
     }
 
-    // 2. SIMPAN DATA KEDATANGAN BARANG
+    // 2. SIMPAN DATA KEDATANGAN BARANG (HANYA 7 KOLOM)
     var sheetName = data.sheetName || 'Kedatangan';
     var sheet = setupSheet(ss, sheetName);
 
@@ -239,17 +221,15 @@ function doPost(e) {
       }, 400);
     }
 
-    var transactionId = data.transactionId || ('TRX-' + new Date().getTime());
     var tanggal = data.tanggal || Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyy-MM-dd');
-    var waktuInput = data.timestamp || Utilities.formatDate(new Date(), 'Asia/Jakarta', 'dd/MM/yyyy HH:mm:ss');
 
-    // Batch insert untuk kecepatan dan hemat kuota Apps Script
+    // Batch insert hanya 7 kolom: Tanggal, Barang, Qty, Unit, Keterangan, No PR, No PO
     var rowsToInsert = [];
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       var qtyVal = Number(item.qty);
       var safeQty = isNaN(qtyVal) ? (item.qty || '') : qtyVal;
-      var cleanPR = item.noPR ? ("'" + item.noPR) : ''; // Tanda kutip tunggal agar leading zero tetap utuh
+      var cleanPR = item.noPR ? ("'" + item.noPR) : '';
       var cleanPO = (item.noPO || item.noPE) ? ("'" + (item.noPO || item.noPE)) : '';
 
       rowsToInsert.push([
@@ -259,9 +239,7 @@ function doPost(e) {
         item.unit || '',
         item.keterangan || '',
         cleanPR,
-        cleanPO,
-        waktuInput,
-        transactionId
+        cleanPO
       ]);
     }
 
@@ -278,7 +256,6 @@ function doPost(e) {
     return createJsonResponse({
       status: 'success',
       type: 'kedatangan',
-      transactionId: transactionId,
       rowCount: items.length,
       sheetName: sheet.getName(),
       spreadsheetName: ss.getName(),
@@ -298,7 +275,7 @@ function doPost(e) {
 }
 
 /**
- * Handle HTTP GET Request (Pengecekan Status via Browser)
+ * Handle HTTP GET Request
  */
 function doGet(e) {
   var ssName = 'Google Spreadsheet';
@@ -316,9 +293,6 @@ function doGet(e) {
   });
 }
 
-/**
- * Helper pembuat response output JSON standar Apps Script
- */
 function createJsonResponse(obj, statusCode) {
   var output = ContentService.createTextOutput(JSON.stringify(obj));
   output.setMimeType(ContentService.MimeType.JSON);

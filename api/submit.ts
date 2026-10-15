@@ -44,8 +44,6 @@ export default async function handler(req: any, res: any) {
       try {
         const payloadToSheets = {
           action: 'submit',
-          transactionId,
-          timestamp,
           type: 'kedatangan',
           sheetName: req.body.sheetName || 'Kedatangan',
           tanggal: submission.tanggal,
