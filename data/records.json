@@ -1,0 +1,21 @@
+[
+  {
+    "id": "TRX-1791274405457-937",
+    "type": "kedatangan",
+    "tanggal": "2026-10-06",
+    "items": [
+      {
+        "id": "item-kedatangan-1",
+        "barang": "Isolasi Kertas 1 inch",
+        "qty": 50,
+        "unit": "PCS",
+        "keterangan": "Kedatangan stok gudang shift 1",
+        "noPR": "PR-2026-1001",
+        "noPO": "PO-2026-0842"
+      }
+    ],
+    "createdAt": "2026-10-06T08:13:25.457Z",
+    "syncedToSheets": false,
+    "syncError": "Webhook URL Google Apps Script belum dikonfigurasi."
+  }
+]

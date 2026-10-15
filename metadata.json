@@ -1,0 +1,8 @@
+{
+  "name": "kmi1_new_input_update_stok_prpo_1.1",
+  "description": "Aplikasi form kedatangan barang PT KMI Wire and Cable Tbk dengan sinkronisasi Google Sheets, backend API, dan manajemen master data barang \u0026 U/M.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
